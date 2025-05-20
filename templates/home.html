@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Planilha de Treinos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gradient-to-br from-gray-900 to-gray-800 text-white min-h-screen p-6">
+  <div class="max-w-7xl mx-auto">
+        <div class="flex items-center justify-between mb-8 flex-wrap gap-4">
+        <div>
+          <h1 class="text-3xl md:text-4xl font-extrabold text-white">🏃‍♂️ Treinos de Corrida</h1>
+        </div>
+        <div class="flex gap-2">
+          <a href="/novo" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow text-sm">➕ Novo Treino</a>
+          <a href="/estatisticas" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow text-sm">📊 Estatísticas</a>
+        </div>
+   </div>
+
+
+    <div class="mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-7 gap-4">
+        {% for dia in dias_da_semana %}
+          {% set destaque = (treino_hoje and treino_hoje.dia == dia and treino_hoje.status == 'Pendente') %}
+          <div class="p-4 rounded shadow border min-h-[180px] {{ 'bg-yellow-600 text-black border-yellow-500' if destaque else 'bg-gray-800 border-gray-700' }}">
+            <h3 class="text-lg font-semibold mb-2 text-center">{{ dia }}</h3>
+            {% set lista = treinos_por_dia.get(dia, []) %}
+            {% if lista %}
+              {% for treino in lista %}
+                <div class="text-sm mb-2 border-b border-gray-600 pb-1">
+                  {% if treino.status == 'Pendente' %}
+                    <a href="/editar/{{ treino.id }}" class="block hover:underline">
+                  {% endif %}
+                    <div class="font-semibold text-blue-400">{{ treino.tipo }}</div>
+                    <div class="text-gray-300">
+                      {% set yt_link = None %}
+                      {% if "youtube.com" in treino.descricao %}
+                        {% set parts = treino.descricao.split(" - ") %}
+                        {{ parts[0] }}
+                        {% if parts|length > 1 %}
+                          <a href="{{ parts[1] }}" target="_blank" class="inline-flex items-center gap-1 text-red-500 bg-white px-2 py-0.5 rounded text-xs font-semibold ml-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24">
+                              <path fill="#FF0000" d="M21.8 8.001s-.2-1.4-.8-2.001c-.8-.8-1.6-.8-2-1C16.2 4.6 12 4.6 12 4.6h-.1s-4.2 0-7 .4c-.4.2-1.2.2-2 1-.6.6-.8 2-.8 2S2 9.6 2 11.2v1.6c0 1.6.2 3.2.2 3.2s.2 1.4.8 2.001c.8.8 1.8.8 2.2 1C7.8 19.4 12 19.4 12 19.4s4.2 0 7-.4c.4-.2 1.2-.2 2-1 .6-.6.8-2.001.8-2.001S22 13.6 22 12v-1.6c0-1.6-.2-2.399-.2-2.399z"/>
+                              <path fill="white" d="M10 15l5.19-3L10 9v6z"/>
+                            </svg>
+                            YouTube
+                          </a>
+                        {% endif %}
+                      {% else %}
+                        {{ treino.descricao }}
+                      {% endif %}
+                    </div>
+                    <div class="mt-1">
+                      {% if treino.status == 'Feito' %}
+                        <span class="bg-green-700 text-white text-xs px-2 py-1 rounded">Feito</span>
+                      {% else %}
+                        <span class="bg-yellow-500 text-black text-xs px-2 py-1 rounded">Pendente</span>
+                      {% endif %}
+                      {% if treino.pace %}
+                        <span class="text-xs text-gray-400 ml-2 italic">Pace: {{ treino.pace }}</span>
+                      {% endif %}
+                    </div>
+                  {% if treino.status == 'Pendente' %}
+                    </a>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            {% else %}
+              <p class="text-gray-500 text-sm text-center">Sem treino</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="w-full border-t border-gray-700 my-8"></div>
+
+    <!-- Filtros -->
+    <form method="get" action="/" class="mb-6 flex flex-wrap items-center justify-between gap-4">
+
+      <div class="flex flex-wrap gap-4">
+        <select name="semana" class="bg-gray-800 border border-gray-600 text-white rounded px-4 py-2">
+          <option value="">Todas as semanas</option>
+          {% for s in ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'] %}
+          <option value="{{ s }}" {% if semana == s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+
+        <select name="tipo" class="bg-gray-800 border border-gray-600 text-white rounded px-4 py-2">
+          <option value="">Todos os tipos</option>
+          {% for t in ['Intervalado', 'Tempo Run', 'Longão', 'Leve', 'Fortalecimento A', 'Fortalecimento B'] %}
+          <option value="{{ t }}" {% if tipo == t %}selected{% endif %}>{{ t }}</option>
+          {% endfor %}
+        </select>
+
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">🔍 Filtrar</button>
+      </div>
+    </form>
+
+    <!-- Tabela de treinos -->
+    <table class="w-full text-sm text-left border border-gray-700 rounded overflow-hidden">
+      <thead class="bg-gray-700 text-xs uppercase">
+        <tr>
+          <th class="px-3 py-2">Semana</th>
+          <th class="px-3 py-2">Dia</th>
+          <th class="px-3 py-2">Tipo</th>
+          <th class="px-3 py-2">Descrição</th>
+          <th class="px-3 py-2">Tempo</th>
+          <th class="px-3 py-2">Distância</th>
+          <th class="px-3 py-2">Tempo Real</th>
+          <th class="px-3 py-2">Distância Real</th>
+          <th class="px-3 py-2">Pace</th>
+          <th class="px-3 py-2">Status</th>
+          <th class="px-3 py-2">Ações</th>
+        </tr>
+      </thead>
+      <tbody class="bg-gray-800">
+        {% for treino in treinos %}
+        <tr class="border-b border-gray-700 hover:bg-gray-800 {% if treino_hoje and treino.id == treino_hoje.id %}bg-green-900{% endif %}">
+          <td class="px-3 py-2">{{ treino.semana }}</td>
+          <td class="px-3 py-2">{{ treino.dia }}</td>
+          <td class="px-3 py-2">{{ treino.tipo }}</td>
+          <td class="px-3 py-2">
+            {% if "youtube.com" in treino.descricao %}
+              {% set parts = treino.descricao.split(" - ") %}
+              {{ parts[0] }}
+              {% if parts|length > 1 %}
+                <a href="{{ parts[1] }}" target="_blank" class="inline-flex items-center gap-1 text-red-500 bg-white px-2 py-0.5 rounded text-xs font-semibold ml-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24">
+                    <path fill="#FF0000" d="M21.8 8.001s-.2-1.4-.8-2.001c-.8-.8-1.6-.8-2-1C16.2 4.6 12 4.6 12 4.6h-.1s-4.2 0-7 .4c-.4.2-1.2.2-2 1-.6.6-.8 2-.8 2S2 9.6 2 11.2v1.6c0 1.6.2 3.2.2 3.2s.2 1.4.8 2.001c.8.8 1.8.8 2.2 1C7.8 19.4 12 19.4 12 19.4s4.2 0 7-.4c.4-.2 1.2-.2 2-1 .6-.6.8-2.001.8-2.001S22 13.6 22 12v-1.6c0-1.6-.2-2.399-.2-2.399z"/>
+                    <path fill="white" d="M10 15l5.19-3L10 9v6z"/>
+                  </svg>
+                  YouTube
+                </a>
+              {% endif %}
+            {% else %}
+              {{ treino.descricao }}
+            {% endif %}
+          </td>
+          <td class="px-3 py-2">{{ treino.tempo or '-' }}</td>
+          <td class="px-3 py-2">{{ '%.2f' % treino.distancia if treino.distancia else '-' }}</td>
+          <td class="px-3 py-2">{{ treino.tempo_realizado or '-' }}</td>
+          <td class="px-3 py-2">{{ '%.2f' % treino.distancia_realizada if treino.distancia_realizada else '-' }}</td>
+          <td class="px-3 py-2">{{ treino.pace or '-' }}</td>
+          <td class="px-3 py-2">
+            {% if treino.status == 'Feito' %}
+              <span class="text-green-400 font-semibold">Feito</span>
+            {% else %}
+              <span class="text-yellow-400">Pendente</span>
+            {% endif %}
+          </td>
+          <td class="px-3 py-2">
+            <a href="/editar/{{ treino.id }}" class="text-blue-400 hover:underline">✏️</a>
+            <a href="/excluir/{{ treino.id }}" class="text-red-400 hover:underline ml-2" onclick="return confirm('Deseja excluir este treino?')">🗑️</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

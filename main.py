@@ -86,7 +86,8 @@ def home(request: Request):
                 t.pace = "-"
         else:
             t.pace = "-"
-        t.status = "Feito" if t.tempo_realizado and t.distancia_realizada else "Pendente"
+
+        t.status = "Feito" if (t.tempo_realizado and t.distancia_realizada) or t.feito else "Pendente"
 
     dias_da_semana = ["Segunda", "Terca", "Quarta", "Quinta", "Sexta", "Sabado", "Domingo"]
     treinos_por_dia = defaultdict(list)
@@ -214,7 +215,7 @@ def atualizar_treino(
     segundos_real: Optional[str] = Form("00"),
     distancia_realizada: Optional[str] = Form(None),
     observacoes: Optional[str] = Form(None),
-    feito: Optional[bool] = Form(False)
+    feito: Optional[str] = Form(None)
 ):
     tempo = f"{horas.zfill(2)}:{minutos.zfill(2)}:{segundos.zfill(2)}"
     tempo_realizado = f"{horas_real.zfill(2)}:{minutos_real.zfill(2)}:{segundos_real.zfill(2)}"

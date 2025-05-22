@@ -10,7 +10,23 @@
 </head>
 <body class="bg-gray-900 text-white min-h-screen p-6">
   <div class="max-w-6xl mx-auto">
-    <h1 class="text-4xl font-bold mb-8 text-center">📈 Estatísticas dos Treinos</h1>
+    <!-- Cabeçalho -->
+    <header class="bg-[#111827] border-b border-gray-700 w-full shadow-md mb-2">
+      <div class="max-w-5xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+
+        <!-- Título centralizado -->
+        <h1 class="text-2xl sm:text-2xl font-bold text-white text-center w-full">
+          Estatísticas
+        </h1>
+
+        <!-- Botões (opcional) -->
+        <div class="flex gap-2 sm:absolute sm:right-4 sm:top-1/2 sm:-translate-y-1/2">
+          <a href="/" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1.5 px-4 rounded shadow text-sm">
+            + Tela Inicial
+          </a>
+        </div>
+      </div>
+    </header>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
 
@@ -35,10 +51,6 @@
           </div>
           <div id="legend" class="mt-4 text-sm text-gray-300 text-left flex flex-wrap gap-4 justify-center"></div>
         </div>
-
-    <div class="mt-10 text-center">
-      <a href="/" class="text-blue-400 hover:underline">← Voltar para Planilha</a>
-    </div>
   </div>
 
   <script>

@@ -8,7 +8,23 @@
 </head>
 <body class="bg-gray-900 text-white min-h-screen p-6">
   <div class="max-w-3xl mx-auto">
-    <h1 class="text-3xl font-bold mb-6 text-center">{% if modo_edicao %}Editar{% else %}Novo{% endif %} Treino</h1>
+    <!-- Cabeçalho -->
+    <header class="bg-[#111827] border-b border-gray-700 w-full shadow-md mb-2">
+      <div class="max-w-5xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+
+        <!-- Título centralizado -->
+        <h1 class="text-2xl sm:text-2xl font-bold text-white text-center w-full">
+          Treinos
+        </h1>
+
+        <!-- Botões (opcional) -->
+        <div class="flex gap-2 sm:absolute sm:right-4 sm:top-1/2 sm:-translate-y-1/2">
+          <a href="/" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1.5 px-4 rounded shadow text-sm">
+            + Tela Inicial
+          </a>
+        </div>
+      </div>
+    </header>
 
     <form method="post">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -81,10 +97,6 @@
         </button>
       </div>
     </form>
-
-    <div class="mt-4 text-center">
-      <a href="/" class="text-blue-400 hover:underline">← Voltar para a página inicial</a>
-    </div>
   </div>
 </body>
 </html>
